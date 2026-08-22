@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SoftwareAppJsonLd } from "@/components/seo/SoftwareAppJsonLd";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const TOOLS = [
   {
@@ -24,6 +30,7 @@ const TOOLS = [
 export default function HomePage() {
   return (
     <>
+      <SoftwareAppJsonLd />
       <section className="border-b border-ink-200 bg-gradient-to-b from-brand-50/60 to-white">
         <Container className="py-20 text-center sm:py-28">
           <h1 className="mx-auto max-w-2xl text-4xl sm:text-5xl">
