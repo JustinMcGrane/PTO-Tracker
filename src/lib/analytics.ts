@@ -15,7 +15,6 @@ export type AnalyticsEvent =
 
 export function track(event: AnalyticsEvent) {
   if (process.env.NODE_ENV === "development") {
-    // eslint-disable-next-line no-console
     console.debug("[analytics]", event.name, event);
   }
   // Provider hook goes here, e.g.: window.posthog?.capture(event.name, event);

@@ -92,6 +92,8 @@ model PtoBucket {
   balanceAsOfDate        DateTime         @default(now())
   accrualAmountMinutes   Int              @default(0)
   accrualFrequency       AccrualFrequency @default(BIWEEKLY)
+  /// Only meaningful when accrualFrequency is PER_HOUR_WORKED.
+  hoursWorkedPerWeek     Int              @default(40)
   maxBalanceMinutes      Int?
   nextAccrualDate        DateTime?
   createdAt              DateTime         @default(now())

@@ -1,4 +1,5 @@
 import {
+  addDaysUTC,
   addMonthsClampedUTC,
   addYearsClampedUTC,
   daysBetween,
@@ -197,6 +198,43 @@ export function projectBalanceSeries(
   }
   points.push({ date: end, balanceMinutes: projectBalanceWithVacations(config, end, vacations) });
   return points;
+}
+
+/**
+ * Estimated date of the next accrual event on or after `fromDate`, for
+ * fixed-schedule frequencies anchored to `config.asOfDate`. Semimonthly is
+ * calendar-anchored (the 1st/15th) rather than anchored to that date.
+ * Returns null for PER_HOUR_WORKED, which has no fixed schedule.
+ */
+export function estimateNextAccrualDate(config: AccrualConfig, fromDate: Date): Date | null {
+  const anchor = toUTCDate(config.asOfDate);
+  const from = toUTCDate(fromDate);
+
+  if (config.frequency === "PER_HOUR_WORKED") return null;
+
+  if (config.frequency === "SEMIMONTHLY") {
+    let candidate = addDaysUTC(from, 1);
+    for (let i = 0; i < 40; i += 1) {
+      const day = candidate.getUTCDate();
+      if (day === 1 || day === 15) return candidate;
+      candidate = addDaysUTC(candidate, 1);
+    }
+    return candidate;
+  }
+
+  const periodsSoFar = countPeriodsElapsed(anchor, from, config.frequency);
+  const nextIndex = periodsSoFar + 1;
+
+  switch (config.frequency) {
+    case "WEEKLY":
+      return addDaysUTC(anchor, nextIndex * 7);
+    case "BIWEEKLY":
+      return addDaysUTC(anchor, nextIndex * 14);
+    case "MONTHLY":
+      return addMonthsClampedUTC(anchor, nextIndex);
+    case "ANNUALLY":
+      return addYearsClampedUTC(anchor, nextIndex);
+  }
 }
 
 // --- Unit conversions -------------------------------------------------
