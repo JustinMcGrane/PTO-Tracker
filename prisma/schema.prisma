@@ -1,0 +1,154 @@
+// Prisma schema for PTO Tracker
+// All PTO amounts are stored as integer minutes to avoid floating-point
+// rounding issues. Convert to hours/days only at the presentation layer
+// (see src/lib/pto/format.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum AccrualFrequency {
+  WEEKLY
+  BIWEEKLY
+  SEMIMONTHLY
+  MONTHLY
+  ANNUALLY
+  PER_HOUR_WORKED
+}
+
+enum PtoBucketType {
+  VACATION
+  SICK
+  PERSONAL
+  FLOATING_HOLIDAY
+  CUSTOM
+}
+
+enum TransactionType {
+  EARNED
+  USED
+  ADJUSTMENT
+}
+
+enum PlanTier {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  UNPAID
+}
+
+/// Mirrors the Supabase auth user. The id matches auth.users.id.
+model User {
+  id        String   @id
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  policies     PtoPolicy[]
+  vacations    PlannedVacation[]
+  subscription Subscription?
+}
+
+/// A user's overall PTO policy/employer plan. Free tier is limited to one.
+model PtoPolicy {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String   @default("My PTO Policy")
+  employmentStartDate DateTime?
+  hoursPerDayMinutes  Int      @default(480)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  buckets PtoBucket[]
+
+  @@index([userId])
+}
+
+/// A single PTO category (vacation, sick, personal, etc.) with its own
+/// accrual configuration and balance. Every policy gets a default
+/// "Vacation" bucket; premium accounts may add more.
+model PtoBucket {
+  id                     String           @id @default(cuid())
+  policyId               String
+  policy                 PtoPolicy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  type                   PtoBucketType    @default(VACATION)
+  name                   String           @default("Vacation")
+  isDefault              Boolean          @default(true)
+  startingBalanceMinutes Int              @default(0)
+  balanceAsOfDate        DateTime         @default(now())
+  accrualAmountMinutes   Int              @default(0)
+  accrualFrequency       AccrualFrequency @default(BIWEEKLY)
+  maxBalanceMinutes      Int?
+  nextAccrualDate        DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  transactions PtoTransaction[]
+  vacations    PlannedVacation[]
+
+  @@index([policyId])
+}
+
+/// A manually recorded ledger entry (earned, used, or adjustment).
+/// Recording a transaction rebases the bucket's starting balance/date.
+model PtoTransaction {
+  id            String          @id @default(cuid())
+  bucketId      String
+  bucket        PtoBucket       @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  type          TransactionType
+  amountMinutes Int
+  occurredOn    DateTime
+  note          String?
+  createdAt     DateTime        @default(now())
+
+  @@index([bucketId])
+  @@index([bucketId, occurredOn])
+}
+
+/// A planned future vacation used to project balance impact.
+model PlannedVacation {
+  id                   String    @id @default(cuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bucketId             String
+  bucket               PtoBucket @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  name                 String
+  startDate            DateTime
+  endDate              DateTime
+  hoursRequiredMinutes Int
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([bucketId])
+}
+
+/// Stripe subscription state for a user's Premium plan.
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier                 PlanTier           @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+}
