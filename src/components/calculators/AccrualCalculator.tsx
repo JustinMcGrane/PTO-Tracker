@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   accrualPerPeriodMinutes,
   hoursToMinutes,
@@ -29,6 +29,10 @@ export function AccrualCalculator() {
   const [maxBalance, setMaxBalance] = useState("");
   const [hoursPerDay, setHoursPerDay] = useState("8");
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    track({ name: "calculator_viewed", calculator: "accrual" });
+  }, []);
 
   const config = useMemo(
     () => ({

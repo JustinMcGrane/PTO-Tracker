@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { track } from "@/lib/analytics";
 
 const credentialsSchema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -50,6 +51,7 @@ export async function signUp(_prevState: AuthActionState, formData: FormData): P
     return { error: error.message };
   }
 
+  track({ name: "signup_completed" });
   redirect("/dashboard");
 }
 

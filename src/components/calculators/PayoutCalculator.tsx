@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { calculatePtoPayout, hourlyRateFromSalary } from "@/lib/pto/calculations";
 import { formatCurrency } from "@/lib/pto/format";
 import { track } from "@/lib/analytics";
@@ -18,6 +18,10 @@ export function PayoutCalculator() {
   const [annualSalary, setAnnualSalary] = useState("65000");
   const [weeklyHours, setWeeklyHours] = useState("40");
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    track({ name: "calculator_viewed", calculator: "payout" });
+  }, []);
 
   const derivedHourlyRate = useMemo(() => {
     if (mode === "rate") return num(hourlyRate);

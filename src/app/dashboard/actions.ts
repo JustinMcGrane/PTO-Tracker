@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { hoursToMinutes, projectBalanceMinutes } from "@/lib/pto/calculations";
 import { bucketToAccrualConfig, getDefaultBucket, getPrimaryPolicy, getSubscription } from "@/lib/pto/queries";
 import { FREE_PLAN_LIMITS, isPremium } from "@/lib/plan";
+import { track } from "@/lib/analytics";
 
 export type ActionState = { error: string | null; success?: boolean };
 
@@ -133,6 +134,7 @@ export async function createVacation(_prevState: ActionState, formData: FormData
     },
   });
 
+  track({ name: "vacation_created", hoursRequired: data.hoursRequired });
   revalidatePath("/dashboard/vacations");
   revalidatePath("/dashboard");
   return { error: null, success: true };

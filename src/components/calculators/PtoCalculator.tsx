@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { hoursToMinutes, minutesToDays, minutesToHours } from "@/lib/pto/calculations";
 import { track } from "@/lib/analytics";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +12,10 @@ export function PtoCalculator() {
   const [earnedHours, setEarnedHours] = useState("120");
   const [usedHours, setUsedHours] = useState("40");
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    track({ name: "calculator_viewed", calculator: "pto" });
+  }, []);
 
   const result = useMemo(() => {
     const earnedMinutes = hoursToMinutes(num(earnedHours));
