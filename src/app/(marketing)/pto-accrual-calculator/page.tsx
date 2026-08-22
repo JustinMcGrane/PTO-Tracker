@@ -4,9 +4,9 @@ import { AccrualCalculator } from "@/components/calculators/AccrualCalculator";
 import { Container } from "@/components/ui/Container";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 
-const title = "PTO Accrual Calculator — Project Your Paid Time Off Balance";
+const title = "Free PTO Accrual Calculator — Project Your Time Off Balance";
 const description =
-  "Calculate exactly how much PTO you'll have accrued by any date. Supports weekly, biweekly, semimonthly, monthly, annual, and per-hour-worked accrual schedules.";
+  "Free PTO accrual calculator (also works as a time off accrual calculator). See exactly how much PTO you'll have accrued by any date — weekly, biweekly, semimonthly, monthly, annual, and per-hour-worked schedules supported.";
 
 export const metadata: Metadata = {
   title,
@@ -36,6 +36,16 @@ const faqs = [
     answer:
       "Some employers, especially for part-time or hourly roles, grant PTO based on hours actually worked rather than a fixed schedule. This calculator converts your annual PTO target into an hourly accrual rate based on your typical hours worked per week.",
   },
+  {
+    question: "How much PTO will I have on a future date?",
+    answer:
+      "Set the 'calculate balance as of' field to any future date and the calculator projects your balance for that day, based on your accrual rate and frequency between now and then. The table below the result also shows your balance 30 days, 90 days, and 1 year out.",
+  },
+  {
+    question: "Does this work for biweekly PTO accrual?",
+    answer:
+      "Yes — biweekly is one of the most common accrual schedules and is fully supported. Select 'Every 2 weeks' as the accrual frequency and the calculator handles the rest, including 26 accrual events per year.",
+  },
 ];
 
 export default function AccrualCalculatorPage() {
@@ -62,7 +72,9 @@ export default function AccrualCalculatorPage() {
             portion of it to your balance each pay period. If you&apos;re granted 120 hours a year
             and paid biweekly, you accrue roughly 4.6 hours (120 ÷ 26) every two weeks. Your balance
             grows steadily from your employment start date, capped at any maximum your employer
-            sets.
+            sets. Some people call this an &quot;accrued PTO calculator,&quot; a &quot;PTO
+            accumulation calculator,&quot; or a &quot;time off accrual calculator&quot; — they all
+            mean the same thing.
           </p>
         </section>
 

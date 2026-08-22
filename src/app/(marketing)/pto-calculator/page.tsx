@@ -4,9 +4,9 @@ import { PtoCalculator } from "@/components/calculators/PtoCalculator";
 import { Container } from "@/components/ui/Container";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 
-const title = "PTO Calculator — Convert PTO Hours to Days & See What You Have";
+const title = "Free PTO Calculator — Time Off Hours to Days Calculator";
 const description =
-  "Free PTO calculator. Convert PTO hours to days, subtract time you've already used, and see exactly how much paid time off you have available.";
+  "Free PTO calculator — also works as a time off calculator or paid time off calculator. Convert PTO hours to days, subtract time you've already used, and see exactly how much time off you have available.";
 
 export const metadata: Metadata = {
   title,
@@ -30,6 +30,11 @@ const faqs = [
     question: "Does this calculator save my numbers?",
     answer:
       "No — this calculator runs entirely in your browser and nothing is saved unless you create a free account to track your PTO automatically.",
+  },
+  {
+    question: "Does this work for salaried employees?",
+    answer:
+      "Yes. This calculator works the same way regardless of whether you're salaried or hourly — it just needs your PTO balance in hours (or days) and your standard workday length. Salaried employees are often granted PTO as a lump sum rather than accrued gradually; if you want to project a balance that accrues over time instead, use the PTO accrual calculator.",
   },
 ];
 
@@ -56,7 +61,9 @@ export default function PtoCalculatorPage() {
             Enter how many PTO hours you&apos;ve earned so far and how many you&apos;ve already used.
             The calculator subtracts the two and shows your available balance in both hours and
             workdays, using whatever hours-per-day figure matches your schedule (8 hours is the
-            default for a standard full-time day).
+            default for a standard full-time day). It works the same whether you think of it as a
+            PTO calculator, a time off calculator, or a paid time off calculator — they&apos;re all
+            answering the same question.
           </p>
         </section>
 
