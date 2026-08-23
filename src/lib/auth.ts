@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { isPremium } from "@/lib/plan";
 import type { User as DbUser } from "@prisma/client";
 
 /**
@@ -36,6 +37,20 @@ export async function requireUser(): Promise<DbUser> {
   const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
+  }
+  return user;
+}
+
+/**
+ * There is no free tier — every dashboard feature requires an active paid
+ * subscription. Use this instead of `requireUser` on every dashboard page
+ * except billing, which is where an unpaid user gets sent to subscribe.
+ */
+export async function requireActiveSubscription(): Promise<DbUser> {
+  const user = await requireUser();
+  const subscription = await prisma.subscription.findUnique({ where: { userId: user.id } });
+  if (!isPremium(subscription)) {
+    redirect("/dashboard/billing");
   }
   return user;
 }

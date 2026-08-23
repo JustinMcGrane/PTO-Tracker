@@ -10,6 +10,15 @@ const initialState: AuthActionState = { error: null };
 export function SignupForm() {
   const [state, formAction, isPending] = useActionState(signUp, initialState);
 
+  if (state.needsConfirmation) {
+    return (
+      <p className="text-sm text-ink-700">
+        Check your email for a confirmation link. Once you confirm, you&apos;ll continue straight to
+        payment to activate your account.
+      </p>
+    );
+  }
+
   return (
     <form action={formAction} className="space-y-1">
       <FieldGroup>
@@ -25,7 +34,7 @@ export function SignupForm() {
       {state.error && <p className="mb-4 text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Creating account…" : "Create free account"}
+        {isPending ? "Creating account…" : "Create account & continue to payment"}
       </Button>
     </form>
   );

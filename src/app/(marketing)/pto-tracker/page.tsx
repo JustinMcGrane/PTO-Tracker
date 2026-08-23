@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { PREMIUM_PRICE } from "@/lib/plan";
 
 const title = "PTO Tracker — Track Your Paid Time Off Automatically";
 const description =
-  "Stop recalculating your PTO balance by hand. PTO Tracker keeps your balance, accrual, and vacation plans up to date automatically — free to start.";
+  "Stop recalculating your PTO balance by hand. PTO Tracker keeps your balance, accrual, and vacation plans up to date automatically.";
 
 export const metadata: Metadata = {
   title,
@@ -71,21 +72,20 @@ export default function PtoTrackerPage() {
         </section>
 
         <section className="mt-10">
-          <h2 className="text-xl">Free to start</h2>
+          <h2 className="text-xl">Simple pricing</h2>
           <p className="mt-3 text-ink-600">
-            A free account covers one PTO policy, current balance tracking, and up to two planned
-            vacations at a time — enough for most people to stop guessing. A Premium plan is
-            available for unlimited vacation planning, multiple PTO categories like sick and
-            personal time, and deeper history and exports.
+            ${PREMIUM_PRICE.monthly} a month (or ${PREMIUM_PRICE.annual} a year) gets you everything:
+            unlimited vacation planning, multiple PTO categories like sick and personal time, full
+            history, and export. No separate free tier to outgrow — just one plan.
           </p>
         </section>
 
         <div className="mt-10 rounded-xl border border-ink-200 bg-ink-50 p-6 text-center">
           <h2 className="text-lg">Start tracking your PTO</h2>
-          <p className="mt-2 text-ink-600">Free forever for the essentials. No credit card required.</p>
+          <p className="mt-2 text-ink-600">Cancel anytime.</p>
           <div className="mt-4">
             <ButtonLink href="/signup" size="sm">
-              Create your free account
+              Subscribe — ${PREMIUM_PRICE.monthly}/mo
             </ButtonLink>
           </div>
         </div>

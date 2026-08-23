@@ -1,6 +1,6 @@
 # PTO Tracker
 
-A B2C SaaS app that helps individual employees calculate, track, and plan their paid time off (PTO). Free calculators drive SEO traffic; a free account adds PTO tracking; Premium ($2.99/mo or $24/yr) unlocks unlimited vacation planning, multiple PTO buckets, and full history/export.
+A B2C SaaS app that helps individual employees calculate, track, and plan their paid time off (PTO). Free public calculators drive SEO traffic; a single paid subscription ($5/mo or $40/yr) unlocks PTO tracking, vacation planning, multiple PTO buckets, and full history/export. There is no free tier for the tracking app — signup goes straight to checkout.
 
 This is a consumer productivity tool, not an employer/HR platform — there are no employee management, approval workflows, or payroll features.
 
@@ -22,7 +22,7 @@ prisma/seed.ts               Demo data seed script
 src/lib/pto/                 Calculation engine (pure functions, unit tested)
 src/lib/supabase/            Supabase client helpers (browser/server/middleware)
 src/lib/auth.ts              Session + app-user helpers
-src/lib/plan.ts              Free/Premium plan limits
+src/lib/plan.ts              Subscription pricing + active-subscription check
 src/lib/stripe.ts            Stripe SDK client
 src/app/(marketing)/         Public site: homepage, calculators, SEO guides, login/signup
 src/app/dashboard/           Authenticated app: overview, vacations, future PTO, activity, billing
@@ -62,10 +62,12 @@ npx prisma migrate dev --name init
 npm run prisma:seed   # optional demo data
 ```
 
-### 5. Set up Stripe (optional, for billing)
+### 5. Set up Stripe
+
+There's no free tier — signup goes straight to Stripe Checkout, so this step is required to get past signup locally (not optional).
 
 1. Create a [Stripe](https://stripe.com) account and switch to test mode.
-2. Create two recurring Prices for a Premium product: $2.99/month and $24/year.
+2. Create two recurring Prices for your subscription product: $5/month and $40/year.
 3. Copy the secret key, publishable key, and both price IDs into `.env.local`.
 4. Forward webhooks to your local server and copy the printed signing secret into `STRIPE_WEBHOOK_SECRET`:
    ```bash

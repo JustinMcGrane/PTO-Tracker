@@ -118,9 +118,9 @@ export default function AccrualCalculatorPage() {
         <section className="rounded-xl border border-ink-200 bg-ink-50 p-6">
           <h2 className="text-lg">Planning a specific vacation?</h2>
           <p className="mt-2 text-ink-600">
-            Create a free account to save this accrual policy, plan vacations against your
-            projected balance, and get an updated PTO forecast automatically — no need to
-            recalculate by hand. See also the{" "}
+            Subscribe to save this accrual policy, plan vacations against your projected balance,
+            and get an updated PTO forecast automatically — no need to recalculate by hand. See
+            also the{" "}
             <Link href="/pto-payout-calculator" className="font-medium text-brand-700 hover:text-brand-800">
               PTO payout calculator
             </Link>{" "}

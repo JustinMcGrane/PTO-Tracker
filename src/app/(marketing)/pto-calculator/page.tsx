@@ -29,7 +29,7 @@ const faqs = [
   {
     question: "Does this calculator save my numbers?",
     answer:
-      "No — this calculator runs entirely in your browser and nothing is saved unless you create a free account to track your PTO automatically.",
+      "No — this calculator runs entirely in your browser and nothing is saved unless you subscribe to track your PTO automatically.",
   },
   {
     question: "Does this work for salaried employees?",

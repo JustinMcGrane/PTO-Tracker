@@ -1,8 +1,7 @@
-import { requireUser } from "@/lib/auth";
-import { getDefaultBucket, getPrimaryPolicy, getSubscription, listTransactions } from "@/lib/pto/queries";
+import { requireActiveSubscription } from "@/lib/auth";
+import { getDefaultBucket, getPrimaryPolicy, listTransactions } from "@/lib/pto/queries";
 import { minutesToHours } from "@/lib/pto/calculations";
 import { formatDate } from "@/lib/pto/format";
-import { isPremium } from "@/lib/plan";
 import { Card } from "@/components/ui/Card";
 import { TransactionForm } from "@/components/dashboard/TransactionForm";
 
@@ -13,13 +12,11 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default async function ActivityPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const policy = await getPrimaryPolicy(user.id);
   const bucket = getDefaultBucket(policy);
-  const subscription = await getSubscription(user.id);
-  const premium = isPremium(subscription);
 
-  const transactions = bucket ? await listTransactions(bucket.id, premium ? 200 : 25) : [];
+  const transactions = bucket ? await listTransactions(bucket.id, 200) : [];
 
   return (
     <div className="space-y-6">
@@ -28,16 +25,9 @@ export default async function ActivityPage() {
           <h1 className="text-2xl">PTO activity</h1>
           <p className="mt-1 text-ink-600">Record PTO earned, used, or adjusted, with a note.</p>
         </div>
-        {premium ? (
-          <a
-            href="/api/export/transactions"
-            className="text-sm font-medium text-brand-700 hover:text-brand-800"
-          >
-            Export CSV
-          </a>
-        ) : (
-          <span className="text-sm text-ink-400">Export CSV — Premium</span>
-        )}
+        <a href="/api/export/transactions" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+          Export CSV
+        </a>
       </div>
 
       <Card>
@@ -69,11 +59,6 @@ export default async function ActivityPage() {
               </div>
             ))}
           </div>
-        )}
-        {!premium && transactions.length >= 25 && (
-          <p className="mt-3 text-xs text-ink-500">
-            Showing your 25 most recent entries. Upgrade to Premium for full history and export.
-          </p>
         )}
       </Card>
     </div>

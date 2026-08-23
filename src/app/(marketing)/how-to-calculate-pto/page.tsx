@@ -103,7 +103,7 @@ export default function HowToCalculatePtoPage() {
           </Link>{" "}
           or{" "}
           <Link href="/signup" className="font-medium text-brand-700 hover:text-brand-800">
-            create a free account
+            subscribe
           </Link>{" "}
           to track it automatically.
         </p>

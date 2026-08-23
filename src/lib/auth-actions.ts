@@ -10,7 +10,7 @@ const credentialsSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
-export type AuthActionState = { error: string | null };
+export type AuthActionState = { error: string | null; needsConfirmation?: boolean };
 
 export async function signIn(_prevState: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const parsed = credentialsSchema.safeParse({
@@ -40,7 +40,7 @@ export async function signUp(_prevState: AuthActionState, formData: FormData): P
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -52,7 +52,15 @@ export async function signUp(_prevState: AuthActionState, formData: FormData): P
   }
 
   track({ name: "signup_completed" });
-  redirect("/dashboard");
+
+  // If email confirmation is required, there's no session yet — the user
+  // continues to billing once they click the link in their inbox (handled
+  // by /auth/callback). Otherwise there's already a session; go straight on.
+  if (!data.session) {
+    return { error: null, needsConfirmation: true };
+  }
+
+  redirect("/dashboard/billing");
 }
 
 export async function signOut() {

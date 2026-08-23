@@ -1,11 +1,5 @@
-import Link from "next/link";
-import { requireUser } from "@/lib/auth";
-import {
-  bucketToAccrualConfig,
-  getSubscription,
-  listVacations,
-  requirePolicyWithBucket,
-} from "@/lib/pto/queries";
+import { requireActiveSubscription } from "@/lib/auth";
+import { bucketToAccrualConfig, listVacations, requirePolicyWithBucket } from "@/lib/pto/queries";
 import {
   accrualPerPeriodMinutes,
   estimateNextAccrualDate,
@@ -15,15 +9,15 @@ import {
   projectBalanceWithVacations,
 } from "@/lib/pto/calculations";
 import { formatBalanceSummary, formatDate } from "@/lib/pto/format";
-import { isPremium } from "@/lib/plan";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { BalanceTimelineChart } from "@/components/dashboard/BalanceTimelineChart";
+import Link from "next/link";
 
 export default async function DashboardPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const { policy, bucket } = await requirePolicyWithBucket(user.id);
-  const [vacations, subscription] = await Promise.all([listVacations(user.id), getSubscription(user.id)]);
+  const vacations = await listVacations(user.id);
 
   const config = bucketToAccrualConfig(bucket, policy.hoursPerDayMinutes);
   const vacationImpacts = vacations.map((v) => ({
@@ -53,26 +47,12 @@ export default async function DashboardPage() {
     hours: Number(minutesToHours(p.balanceMinutes).toFixed(1)),
   }));
 
-  const premium = isPremium(subscription);
   const balance = formatBalanceSummary(currentBalanceMinutes, config.hoursPerDayMinutes);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl">{policy.name}</h1>
-          <p className="text-sm text-ink-600">
-            {premium ? "Premium plan" : "Free plan"}
-            {!premium && (
-              <>
-                {" · "}
-                <Link href="/dashboard/billing" className="font-medium text-brand-700 hover:text-brand-800">
-                  Upgrade
-                </Link>
-              </>
-            )}
-          </p>
-        </div>
+        <h1 className="text-2xl">{policy.name}</h1>
         <ButtonLink href="/dashboard/settings" variant="secondary" size="sm">
           Edit policy
         </ButtonLink>

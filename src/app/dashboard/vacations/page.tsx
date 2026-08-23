@@ -1,21 +1,17 @@
-import { requireUser } from "@/lib/auth";
-import { bucketToAccrualConfig, getSubscription, listVacations, requirePolicyWithBucket } from "@/lib/pto/queries";
+import { requireActiveSubscription } from "@/lib/auth";
+import { bucketToAccrualConfig, listVacations, requirePolicyWithBucket } from "@/lib/pto/queries";
 import { calculateVacationPlan, minutesToDays, minutesToHours } from "@/lib/pto/calculations";
 import { formatDate } from "@/lib/pto/format";
-import { FREE_PLAN_LIMITS, isPremium } from "@/lib/plan";
 import { deleteVacation } from "@/app/dashboard/actions";
 import { Card } from "@/components/ui/Card";
-import { ButtonLink } from "@/components/ui/Button";
 import { VacationForm } from "@/components/dashboard/VacationForm";
 
 export default async function VacationsPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const { policy, bucket } = await requirePolicyWithBucket(user.id);
-  const [vacations, subscription] = await Promise.all([listVacations(user.id), getSubscription(user.id)]);
+  const vacations = await listVacations(user.id);
 
   const config = bucketToAccrualConfig(bucket, policy.hoursPerDayMinutes);
-  const premium = isPremium(subscription);
-  const atLimit = !premium && vacations.length >= FREE_PLAN_LIMITS.maxVacations;
 
   const plans = vacations.map((vacation) => {
     const others = vacations
@@ -41,16 +37,7 @@ export default async function VacationsPage() {
 
       <Card>
         <h2 className="mb-4 text-lg text-ink-900">Plan a new vacation</h2>
-        {atLimit ? (
-          <div className="rounded-lg bg-ink-50 p-4 text-sm text-ink-600">
-            Free accounts can plan up to {FREE_PLAN_LIMITS.maxVacations} vacations at a time.{" "}
-            <ButtonLink href="/dashboard/billing" size="sm" className="mt-3">
-              Upgrade for unlimited planning
-            </ButtonLink>
-          </div>
-        ) : (
-          <VacationForm />
-        )}
+        <VacationForm />
       </Card>
 
       <div className="space-y-4">

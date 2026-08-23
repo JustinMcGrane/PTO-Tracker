@@ -24,7 +24,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
     title: "Product",
     links: [
       { href: "/pto-tracker", label: "PTO Tracker" },
-      { href: "/signup", label: "Create a free account" },
+      { href: "/signup", label: "Sign up" },
       { href: "/login", label: "Log in" },
     ],
   },

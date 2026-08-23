@@ -254,7 +254,7 @@ export function AccrualCalculator() {
           Save this policy and we&apos;ll keep these projections up to date automatically.
         </p>
         <ButtonLink href="/signup" size="sm">
-          Track my PTO free
+          Track my PTO
         </ButtonLink>
       </div>
     </Card>

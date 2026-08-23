@@ -2,11 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireUser } from "@/lib/auth";
+import { requireActiveSubscription } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hoursToMinutes, projectBalanceMinutes } from "@/lib/pto/calculations";
-import { bucketToAccrualConfig, getDefaultBucket, getPrimaryPolicy, getSubscription } from "@/lib/pto/queries";
-import { FREE_PLAN_LIMITS, isPremium } from "@/lib/plan";
+import { bucketToAccrualConfig, getDefaultBucket, getPrimaryPolicy } from "@/lib/pto/queries";
 import { track } from "@/lib/analytics";
 
 export type ActionState = { error: string | null; success?: boolean };
@@ -26,7 +25,7 @@ const policySchema = z.object({
 /** Creates the user's PTO policy and default Vacation bucket, or updates
  * them if they already exist (there's only ever one policy in the MVP UI). */
 export async function savePolicy(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
 
   const parsed = policySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
@@ -77,11 +76,6 @@ export async function savePolicy(_prevState: ActionState, formData: FormData): P
         },
       },
     });
-    await prisma.subscription.upsert({
-      where: { userId: user.id },
-      update: {},
-      create: { userId: user.id, tier: "FREE", status: "ACTIVE" },
-    });
   }
 
   revalidatePath("/dashboard");
@@ -101,21 +95,11 @@ const vacationSchema = z
   });
 
 export async function createVacation(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
 
   const policy = await getPrimaryPolicy(user.id);
   const bucket = getDefaultBucket(policy);
   if (!bucket) return { error: "Set up your PTO policy first." };
-
-  const subscription = await getSubscription(user.id);
-  if (!isPremium(subscription)) {
-    const count = await prisma.plannedVacation.count({ where: { userId: user.id } });
-    if (count >= FREE_PLAN_LIMITS.maxVacations) {
-      return {
-        error: `Free accounts can plan up to ${FREE_PLAN_LIMITS.maxVacations} vacations at a time. Upgrade to Premium for unlimited planning.`,
-      };
-    }
-  }
 
   const parsed = vacationSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
@@ -141,7 +125,7 @@ export async function createVacation(_prevState: ActionState, formData: FormData
 }
 
 export async function deleteVacation(vacationId: string) {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   await prisma.plannedVacation.deleteMany({ where: { id: vacationId, userId: user.id } });
   revalidatePath("/dashboard/vacations");
   revalidatePath("/dashboard");
@@ -156,7 +140,7 @@ const transactionSchema = z.object({
 });
 
 export async function createTransaction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
 
   const policy = await getPrimaryPolicy(user.id);
   const bucket = getDefaultBucket(policy);

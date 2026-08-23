@@ -10,20 +10,11 @@ export function SoftwareAppJsonLd() {
     url: siteUrl,
     description:
       "Calculate your PTO, see how quickly it accrues, and track exactly how much time off you'll have before your next trip.",
-    offers: [
-      {
-        "@type": "Offer",
-        name: "Free",
-        price: "0",
-        priceCurrency: "USD",
-      },
-      {
-        "@type": "Offer",
-        name: "Premium",
-        price: "2.99",
-        priceCurrency: "USD",
-      },
-    ],
+    offers: {
+      "@type": "Offer",
+      price: "5",
+      priceCurrency: "USD",
+    },
   };
 
   return (

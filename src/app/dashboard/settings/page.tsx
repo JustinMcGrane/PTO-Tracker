@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireActiveSubscription } from "@/lib/auth";
 import { requirePolicyWithBucket } from "@/lib/pto/queries";
 import { minutesToHours } from "@/lib/pto/calculations";
 import { Card } from "@/components/ui/Card";
@@ -10,7 +10,7 @@ function toDateInputValue(date: Date | null): string {
 }
 
 export default async function SettingsPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const { policy, bucket } = await requirePolicyWithBucket(user.id);
 
   const defaults: PolicyFormDefaults = {

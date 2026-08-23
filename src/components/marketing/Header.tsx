@@ -38,7 +38,7 @@ export function Header() {
             Log in
           </Link>
           <ButtonLink href="/signup" size="sm">
-            Sign up free
+            Sign up
           </ButtonLink>
         </div>
       </Container>

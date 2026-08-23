@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireActiveSubscription } from "@/lib/auth";
 import { getPrimaryPolicy } from "@/lib/pto/queries";
 import { Card } from "@/components/ui/Card";
 import { PolicyForm } from "@/components/dashboard/PolicyForm";
 
 export default async function OnboardingPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const existing = await getPrimaryPolicy(user.id);
   if (existing) redirect("/dashboard");
 

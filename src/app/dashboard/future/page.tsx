@@ -1,9 +1,9 @@
-import { requireUser } from "@/lib/auth";
+import { requireActiveSubscription } from "@/lib/auth";
 import { bucketToAccrualConfig, listVacations, requirePolicyWithBucket } from "@/lib/pto/queries";
 import { FutureCalculator } from "@/components/dashboard/FutureCalculator";
 
 export default async function FuturePtoPage() {
-  const user = await requireUser();
+  const user = await requireActiveSubscription();
   const { policy, bucket } = await requirePolicyWithBucket(user.id);
   const vacations = await listVacations(user.id);
 

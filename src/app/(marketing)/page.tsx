@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SoftwareAppJsonLd } from "@/components/seo/SoftwareAppJsonLd";
+import { PREMIUM_PRICE } from "@/lib/plan";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -56,8 +57,8 @@ export default function HomePage() {
           <div className="mx-auto max-w-xl text-center">
             <h2 className="text-2xl sm:text-3xl">Three free calculators, no account needed</h2>
             <p className="mt-3 text-ink-600">
-              Every calculator runs instantly in your browser. Save your results with a free
-              account when you&apos;re ready.
+              Every calculator runs instantly in your browser. Subscribe when you&apos;re ready to
+              save your results and track them automatically.
             </p>
           </div>
 
@@ -82,9 +83,9 @@ export default function HomePage() {
           <div>
             <h2 className="text-2xl sm:text-3xl">Then track it automatically</h2>
             <p className="mt-4 text-ink-600">
-              Create a free account and PTO Tracker keeps your balance current for you — no more
-              spreadsheets or guessing. See your next accrual date, your projected balance in 30,
-              90 days, or year-end, and a simple timeline of how your PTO builds up over time.
+              Subscribe and PTO Tracker keeps your balance current for you — no more spreadsheets
+              or guessing. See your next accrual date, your projected balance in 30, 90 days, or
+              year-end, and a simple timeline of how your PTO builds up over time.
             </p>
             <ul className="mt-6 space-y-3 text-ink-700">
               <li className="flex gap-2">
@@ -101,7 +102,9 @@ export default function HomePage() {
               </li>
             </ul>
             <div className="mt-8">
-              <ButtonLink href="/signup">Create your free account</ButtonLink>
+              <ButtonLink href="/signup">
+                Start tracking — ${PREMIUM_PRICE.monthly}/mo
+              </ButtonLink>
             </div>
           </div>
 

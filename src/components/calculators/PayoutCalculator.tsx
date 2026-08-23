@@ -135,7 +135,7 @@ export function PayoutCalculator() {
 
       <div className="mt-6 flex flex-col items-center gap-2 text-center">
         <ButtonLink href="/signup" size="sm">
-          Track my PTO free
+          Track my PTO
         </ButtonLink>
       </div>
     </Card>

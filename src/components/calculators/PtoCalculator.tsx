@@ -91,7 +91,7 @@ export function PtoCalculator() {
       <div className="mt-6 flex flex-col items-center gap-2 text-center">
         <p className="text-sm text-ink-600">Save this and see how it grows over time.</p>
         <ButtonLink href="/signup" size="sm">
-          Track my PTO free
+          Track my PTO
         </ButtonLink>
       </div>
     </Card>

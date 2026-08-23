@@ -13,7 +13,7 @@ export async function GET() {
 
   const subscription = await getSubscription(user.id);
   if (!isPremium(subscription)) {
-    return NextResponse.json({ error: "PTO history export is a Premium feature." }, { status: 403 });
+    return NextResponse.json({ error: "An active subscription is required." }, { status: 403 });
   }
 
   const policy = await getPrimaryPolicy(user.id);
